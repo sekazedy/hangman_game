@@ -28,7 +28,13 @@ class HangmanGame:
         return random.choice(self.word_list)
     
     def update_hangman_canvas(self):
-        self.hangman_canvas.delete("all") # Clear the canvas for redrawing
+        self.hangman_canvas.delete("all") # Clear the canvas before redrawing
+        stages = [self.draw_head, self.draw_body, self.draw_left_arm, self.draw_right_arm, self.draw_left_leg, self.draw_right_leg, self.draw_face]
+
+        for i in range(len(self.incorrect_guesses)):
+            if i < len(stages):
+                stages[i]()     # Call the drawing method for each incorrect guess
+        
         incorrect_guesses_count = len(self.incorrect_guesses)
         
         if incorrect_guesses_count >= 1:
@@ -80,6 +86,31 @@ class HangmanGame:
         # Display the game over message in the now-empty area
         self.game_over_label = tk.Label(self.master, text=message, font=("Helvetica", 18), fg="red")
         self.game_over_label.pack(pady=(10, 20))
+
+    def draw_head(self):
+        self.hangman_canvas.create_oval(125, 50, 185, 110, outline="black")
+    
+    def draw_body(self):
+        self.hangman_canvas.create_line(155, 110, 155, 170, fill="black")
+    
+    def draw_left_arm(self):
+        self.hangman_canvas.create_line(155, 130, 125, 150, fill="black")
+    
+    def draw_right_arm(self):
+        self.hangman_canvas.create_line(155, 130, 185, 150, fill="black")
+
+    def draw_left_leg(self):
+        self.hangman_canvas.create_line(155, 170, 125, 200, fill="black")
+    
+    def draw_right_leg(self):
+        self.hangman_canvas.create_line(155, 170, 185, 200, fill="black")
+    
+    def draw_face(self):
+        self.hangman_canvas.create_line(140, 70, 150, 80, fill="black") # Left eye
+        self.hangman_canvas.create_line(160, 70, 170, 80, fill="black") # Right eye
+        
+        # Draw a sad mouth
+        self.hangman_canvas.create_arc(140, 85, 170, 105, start=0, extent=-180, fill="black")
 
 def main():
     root = tk.Tk()
