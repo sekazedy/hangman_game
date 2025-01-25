@@ -2,10 +2,11 @@ import random
 import tkinter as tk
 
 class HangmanGame:
-    def __init__(self, master):
-        self.master = master
+    def __init__(self, tk_object):
+        self.master = tk_object
         self.master.title("Hangman Game")
-        self.master.geometry("900x650")
+        self.master.geometry("900x700")
+        self.master.configure(bg="light blue")
         self.word_list = ["PYTHON", "JAVASCRIPT", "KOTLIN", "JAVA", "RUBY", "SWIFT", "PHP"]
         self.secret_word = self.choose_secret_word()
         self.correct_guesses = set()
@@ -13,14 +14,18 @@ class HangmanGame:
         self.attempts_left = 7
         self.initialize_gui()
         
-        self.reset_button = tk.Button(self.master, text="Reset Game", command=self.reset_game)
+        button_bg = "#4a7a8c"
+        button_fg = "white"
+        button_font = ("Helvetica", 12, "bold")
+        
+        self.reset_button = tk.Button(self.master, text="Reset Game", command=self.reset_game, width=20, height=2, bg=button_bg, fg=button_fg, font=button_font)
         self.reset_button.pack(pady=(10, 0))
     
     def initialize_gui(self):
         self.hangman_canvas = tk.Canvas(self.master, width=300, height=300, bg="white")
         self.hangman_canvas.pack(pady=20)
 
-        self.word_display = tk.Label(self.master, text="_ " * len(self.secret_word), font=("Helvetica", 30))
+        self.word_display = tk.Label(self.master, text="_ " * len(self.secret_word), font=("Helvetica", 30), bg='light blue')
         self.word_display.pack(pady=(40, 20))
 
         self.buttons_frame = tk.Frame(self.master)
@@ -65,6 +70,10 @@ class HangmanGame:
             self.display_game_over_message(f"Game over! The word was: {self.secret_word}")
     
     def setup_alphabet_buttons(self):
+        button_bg = "#4a7a8c"
+        button_fg = "white"
+        button_font = ("Helvetica", 12, "bold")
+        
         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         upper_row = alphabet[:13] # First half of the alphabet
         lower_row = alphabet[13:] # Second half of the alphabet
@@ -75,11 +84,11 @@ class HangmanGame:
         lower_frame.pack()
         
         for letter in upper_row:
-            button = tk.Button(upper_frame, text=letter, command=lambda l=letter: self.guess_letter(l), width=4, height=2)
+            button = tk.Button(upper_frame, text=letter, command=lambda l=letter: self.guess_letter(l), width=4, height=2, bg=button_bg, fg=button_fg, font=button_font)
             button.pack(side="left", padx=2, pady=2)
         
         for letter in lower_row:
-            button = tk.Button(lower_frame, text=letter, command=lambda l=letter: self.guess_letter(l), width=4, height=2)
+            button = tk.Button(lower_frame, text=letter, command=lambda l=letter: self.guess_letter(l), width=4, height=2, bg=button_bg, fg=button_fg, font=button_font)
             button.pack(side="left", padx=2, pady=2)
     
     def display_game_over_message(self, message):
@@ -90,12 +99,18 @@ class HangmanGame:
         self.buttons_frame.pack_forget()
         
         # Display the game over message in the now-empty area
-        self.game_over_label = tk.Label(self.master, text=message, font=("Helvetica", 18), fg="red")
+        font = ("Arial", 18, "italic")
+        self.game_over_label = tk.Label(self.master, text=message, font=font, fg="brown", bg='light blue')
         self.game_over_label.pack(pady=(10, 20))
 
         # Display the restart button
-        self.restart_button = tk.Button(self.master, text="Restart Game", command=self.reset_game, width=20, height=2)
-        self.restart_button.pack(pady=(10, 20))
+        button_bg = "#4a7a8c"
+        button_fg = "white"
+        button_font = ("Helvetica", 12, "bold")
+        
+        if not hasattr(self, 'restart_button'):
+            self.restart_button = tk.Button(self.master, text="Restart Game", command=self.reset_game, width=20, height=2, bg=button_bg, fg=button_fg, font=button_font)
+            self.restart_button.pack(pady=(10, 20))
 
     def draw_head(self):
         self.hangman_canvas.create_oval(125, 50, 185, 110, outline="black")
