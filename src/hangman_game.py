@@ -5,13 +5,16 @@ class HangmanGame:
     def __init__(self, master):
         self.master = master
         self.master.title("Hangman Game")
-        self.master.geometry("900x600")
+        self.master.geometry("900x650")
         self.word_list = ["PYTHON", "JAVASCRIPT", "KOTLIN", "JAVA", "RUBY", "SWIFT", "PHP"]
         self.secret_word = self.choose_secret_word()
         self.correct_guesses = set()
         self.incorrect_guesses = set()
         self.attempts_left = 7
         self.initialize_gui()
+        
+        self.reset_button = tk.Button(self.master, text="Reset Game", command=self.reset_game)
+        self.reset_button.pack(pady=(10, 0))
     
     def initialize_gui(self):
         self.hangman_canvas = tk.Canvas(self.master, width=300, height=300, bg="white")
@@ -37,8 +40,8 @@ class HangmanGame:
         
         incorrect_guesses_count = len(self.incorrect_guesses)
         
-        if incorrect_guesses_count >= 1:
-            self.hangman_canvas.create_line(50, 180, 150, 180) # Base
+        if incorrect_guesses_count == 7:
+            self.hangman_canvas.create_line(155, 10, 155, 50) # The rope
     
     def guess_letter(self, letter):
         if letter in self.secret_word and letter not in self.correct_guesses:
@@ -80,12 +83,19 @@ class HangmanGame:
             button.pack(side="left", padx=2, pady=2)
     
     def display_game_over_message(self, message):
+        # Hide the reset button
+        self.reset_button.pack_forget()
+        
         # Hide the alphabet buttons by hiding the entire buttons_frame
         self.buttons_frame.pack_forget()
         
         # Display the game over message in the now-empty area
         self.game_over_label = tk.Label(self.master, text=message, font=("Helvetica", 18), fg="red")
         self.game_over_label.pack(pady=(10, 20))
+
+        # Display the restart button
+        self.restart_button = tk.Button(self.master, text="Restart Game", command=self.reset_game, width=20, height=2)
+        self.restart_button.pack(pady=(10, 20))
 
     def draw_head(self):
         self.hangman_canvas.create_oval(125, 50, 185, 110, outline="black")
@@ -106,11 +116,42 @@ class HangmanGame:
         self.hangman_canvas.create_line(155, 170, 185, 200, fill="black")
     
     def draw_face(self):
-        self.hangman_canvas.create_line(140, 70, 150, 80, fill="black") # Left eye
-        self.hangman_canvas.create_line(160, 70, 170, 80, fill="black") # Right eye
+        self.hangman_canvas.create_line(140, 70, 150, 81, fill="black") # Left eye
+        self.hangman_canvas.create_line(140, 80, 150, 70, fill="black") # Left eye
+        
+        self.hangman_canvas.create_line(160, 70, 170, 81, fill="black") # Right eye
+        self.hangman_canvas.create_line(160, 80, 170, 70, fill="black") # Right eye
         
         # Draw a sad mouth
-        self.hangman_canvas.create_arc(140, 85, 170, 105, start=0, extent=-180, fill="black")
+        self.hangman_canvas.create_arc(143, 95, 167, 115, start=0, extent=180, fill="black")
+    
+    def reset_game(self):
+        # Re-display the reset button
+        self.reset_button.pack(pady=(10, 0))
+        
+        self.secret_word = self.choose_secret_word()
+        self.correct_guesses = set()
+        self.incorrect_guesses = set()
+        self.attempts_left = 7
+        self.hangman_canvas.delete("all")
+        self.update_word_display()
+        
+        for frame in self.buttons_frame.winfo_children():
+            for button in frame.winfo_children():
+                button.configure(state=tk.NORMAL)
+        
+        if hasattr(self, 'game_over_label'):
+            self.game_over_label.destroy()
+        
+        # Hide the game over label and the restart button when the game is reset
+        if hasattr(self, 'game_over_label') and self.game_over_label.winfo_exists():
+            self.game_over_label.pack_forget()
+        
+        if hasattr(self, 'restart_button') and self.restart_button.winfo_exists():
+            self.restart_button.pack_forget()
+        
+        # Ensure the alphabet buttons frame and other interactive elements are visible again
+        self.buttons_frame.pack()
 
 def main():
     root = tk.Tk()
